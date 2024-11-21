@@ -1,0 +1,67 @@
+plugins {
+	id 'java'
+	id 'jacoco'
+	id "org.sonarqube" version "4.2.1.3168"
+}
+
+sonar {
+	properties {
+		def modules = subprojects.projectDir.collect { "${it.toString().replace(project.projectDir.toString() + "/", "")}" }
+		property "sonar.projectKey", "bck-base-prueba-proteccione"
+		property "sonar.organization", "co.com.bck.base.prueba.proteccione"
+		property "sonar.host.url", "http://172.16.1.225:9000/"
+		property "sonar.cache", "${layout.buildDirectory.get()}/.sonar/cache"
+		property "sonar.sourceEncoding", "UTF-8"
+		property "sonar.test", "src/test"
+		property "sonar.java.binaries", ""
+		property "sonar.junit.reportsPath", ""
+		property "sonar.java.coveragePlugin", "jacoco"
+		property "sonar.modules", "${modules.join(',')}"
+		property "sonar.sources", "src,deployment,settings.gradle,main.gradle,build.gradle,${modules.collect { "${it}/build.gradle" }.join(',')}"
+		property "sonar.coverage.exclusions", "infrastructure/**/*,commons/**/*,application/**/*"
+		property "sonar.issue.ignore.multicriteria", "e1,e2"
+		//Exclusion de la regla de @Autowired
+		property "sonar.issue.ignore.multicriteria.e1.ruleKey", "java:S6813"
+		property "sonar.issue.ignore.multicriteria.e1.resourceKey", "**/*.java"
+		//Exclusion de la regla de nombres de constantes en mayúsculas
+		property "sonar.issue.ignore.multicriteria.e2.ruleKey", "java:S115"
+		property "sonar.issue.ignore.multicriteria.e2.resourceKey", "**/*.java"
+		property 'sonar.token', 'squ_5da52dd7af2199cfe3396c145121724de5c72bb1'
+	}
+}
+
+jacocoTestReport {
+	reports {
+		xml.required.set(true)
+	}
+	dependsOn test
+}
+test.finalizedBy jacocoTestReport
+
+tasks.named('sonar').configure {
+	dependsOn jacocoTestReport
+}
+
+group = 'co.com.bck'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '21'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

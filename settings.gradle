@@ -1,0 +1,6 @@
+rootProject.name = 'bck-base-prueba-proteccion'
+include 'application'
+include 'infrastructure'
+include 'domain'
+include 'commons'
+

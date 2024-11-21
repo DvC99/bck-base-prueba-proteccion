@@ -1,0 +1,60 @@
+buildscript {
+    ext {
+        springBootVersion = '3.2.1'
+        lombokVersion = '1.18.34'
+        junitVersion = '5.10.3'
+        mockitoVersion = '5.12.0'
+        easyRandomVersion = '4.3.0'
+        apacheCommonsLang3 = '3.16.0'
+        springTxVersion = '6.1.1'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'jacoco'
+}
+
+group = 'co.com.syman'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':commons')
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+    testImplementation "org.jeasy:easy-random-core:${easyRandomVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    implementation "org.apache.commons:commons-lang3:${apacheCommonsLang3}"
+    implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
+    implementation "org.springframework:spring-tx:${springTxVersion}"
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    'co/com/bck/domain/dtos/**'
+            ])
+        }))
+    }
+}
+
+test {
+    finalizedBy jacocoTestReport
+    useJUnitPlatform()
+}
+
+bootJar { enabled = false }

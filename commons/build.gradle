@@ -1,0 +1,37 @@
+buildscript {
+    ext {
+        springBootVersion = '3.2.1'
+        lombokVersion = '1.18.30'
+        junitVersion = '5.10.1'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version "${springBootVersion}"
+}
+
+group = 'co.com.syman'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    implementation 'org.springframework:spring-tx:6.1.1'
+    implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
+    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootJar { enabled = false }

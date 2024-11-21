@@ -1,0 +1,46 @@
+buildscript {
+    ext {
+        springBootVersion = '3.2.1'
+        lombokVersion = '1.18.30'
+        junitVersion = '5.10.1'
+        springCloudStarterConfig = '4.1.2'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'co.com.bck'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':infrastructure')
+    testImplementation platform("org.junit:junit-bom:${junitVersion}")
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    //implementation "org.springframework.cloud:spring-cloud-starter-config:${springCloudStarterConfig}"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    mainClass.value("co.com.bck.MainApplication")
+    archiveFileName = "${project.getParent().getName()}.${archiveExtension.get()}"
+}

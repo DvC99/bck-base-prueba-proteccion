@@ -1,0 +1,36 @@
+// ejemplo.proto
+syntax = "proto3";
+
+package com.sysman.basegradle.grpc;
+
+option java_multiple_files = true;
+
+service Subscriber {
+  rpc testMethod (RequestProto) returns (SubscriberProto);
+}
+
+message RequestProto {
+  string SubscriberId = 1;
+}
+
+message SubscriberProto {
+  int64 id_subscriber = 1;
+  int64 subscriber_number = 2;
+  int64 internal_code = 3;
+  string company_nit = 4;
+  int64 user_id = 5;
+  string user_document_number = 6;
+  string user_document_type = 7;
+  string user_full_name = 8;
+  string user_telephone = 9;
+  string user_cell_phone = 10;
+  string user_email = 11;
+  int32 status_id = 12;
+  string status_name = 13;
+  string property_address = 14;
+  string cycle_id = 15;
+  string cycle_name = 16;
+  string billing_route_id = 17;
+  string billing_route_name = 18;
+  int64 sequence = 19;
+}
