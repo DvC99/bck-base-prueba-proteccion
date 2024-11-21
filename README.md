@@ -60,4 +60,17 @@ Información sobre cómo contribuir al proyecto, incluyendo convenciones de cód
 
 ---
 
+## Informes
+
+### Swagger
+Se accede al Swagger por el siguiente link:
+http://localhost:9082/swagger-ui/index.html#/
+
+### Jacoco
+Se accede al reporte de pruebas despues de hacer build del proyecto, por el siguiente link.
+Nota: Hay que ajustar la ruta para la ubicacion del proyecto.
+
+file:///C:/PROGRAMAS/Proteccion-PruebaTecnica/bck-base-prueba-proteccion/domain/build/reports/tests/test/index.html
+
+
 Este README es un punto de partida y puede ser personalizado según las necesidades específicas de tu proyecto.

@@ -6,6 +6,7 @@ import co.com.bck.domain.commands.numerofibonacci.CreateNumeroFibonaccCommand;
 import co.com.bck.domain.dto.fibonacci.FibonacciDto;
 import co.com.bck.domain.dto.numerofibonacci.NumeroFibonacciDto;
 import co.com.bck.domain.services.fibonacci.IFibonacciService;
+import co.com.bck.domain.services.numerofibonacci.INumeroFibonacciService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import static co.com.bck.domain.constants.DomainErrors.*;
 @Component
 public class CreateFibonacciCommand extends CommandProcessAbstract<FibonacciDto,FibonacciDto > {
     private final IFibonacciService fibonacciService;
+    private final INumeroFibonacciService numeroFibonacciService;
     private final CreateNumeroFibonaccCommand createFibonacciCommand;
 
     private List<NumeroFibonacciDto> series = new ArrayList<>();
@@ -31,8 +33,9 @@ public class CreateFibonacciCommand extends CommandProcessAbstract<FibonacciDto,
 
     private NumeroFibonacciDto numeroFibonacciDtoRes;
 
-    public CreateFibonacciCommand(IFibonacciService fibonacciService, CreateNumeroFibonaccCommand createFibonacciCommand) {
+    public CreateFibonacciCommand(IFibonacciService fibonacciService, INumeroFibonacciService numeroFibonacciService, CreateNumeroFibonaccCommand createFibonacciCommand) {
         this.fibonacciService = fibonacciService;
+        this.numeroFibonacciService = numeroFibonacciService;
         this.createFibonacciCommand = createFibonacciCommand;
     }
 
@@ -48,7 +51,7 @@ public class CreateFibonacciCommand extends CommandProcessAbstract<FibonacciDto,
     @Override
     protected void process() throws DomainException {
         LocalTime currentTime = getContext().getFecha();
-        int seedX = currentTime.getMinute() % 100;
+        int seedX = Integer.parseInt(String.valueOf(currentTime.getMinute()).substring(0,1));
         int seedY = currentTime.getMinute() % 10;
         int numberOfElements = currentTime.getSecond();
 
@@ -66,13 +69,12 @@ public class CreateFibonacciCommand extends CommandProcessAbstract<FibonacciDto,
         getContext().setSemillaY(seedY);
         getContext().setCantidadNumeros(numberOfElements);
 
+        this.fibonacciDto = this.fibonacciService.save(getContext());
+
         this.calculateFibonacciSeries(numberOfElements);
 
-        fibonacciDto = this.fibonacciService.save(getContext());
-
-
+        this.fibonacciDto.setNumeroFibonacci(this.series);
         setResult(this.fibonacciDto);
-        getContext().setNumeroFibonacci(this.series);
         setExecuted(true);
     }
 
@@ -80,9 +82,10 @@ public class CreateFibonacciCommand extends CommandProcessAbstract<FibonacciDto,
     protected void postProcess() throws DomainException {
         log.info("Se ha creado el Fibonacci con ID: {}", fibonacciDto.getId());
         for (NumeroFibonacciDto numeroFibonacciDto : series) {
-            createFibonacciCommand.setContext(numeroFibonacciDto);
-            createFibonacciCommand.execute();
-            numeroFibonacciDtoRes = createFibonacciCommand.getResult();
+            numeroFibonacciDto.setIdFibonacci(this.fibonacciDto.getId());
+            CreateNumeroFibonaccCommand command = new CreateNumeroFibonaccCommand(numeroFibonacciService);
+            command.setContext(numeroFibonacciDto);
+            this.numeroFibonacciDtoRes =  command.execute();
             log.info("Se ha creado el Número Fibonacci con ID: {}", numeroFibonacciDtoRes.getIdFibonacci());
         }
     }
